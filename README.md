@@ -1,1 +1,1 @@
-# Fgcu_platform
+# University Platform
