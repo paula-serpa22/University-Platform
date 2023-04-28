@@ -1,11 +1,3 @@
-""""Gives information about the program
-"""
-# Maria Paula Serpa Sanchez
-# Students can use this program to know more information about credits, graduation, requirements, financial aid.
-# The student has to create and account and login to it to receive the information#
-print("Welcome to your FGCU Student portal")
-
-
 def print_message(slogan_to_print):
     """Show to the student the University's slogan
         """
@@ -29,25 +21,84 @@ print("Wings Up!")
 print("Create your student account")
 name = input("Enter your name: ")
 print("Welcome", name + ".")
-Id = input("Enter the last 4 digits of your id number: ")
-print("Your full ID number is 9832" + Id)
-print("Your username is: ", name + "_" + Id)
-UserName = input("Please enter the username based on the information provided above: ")
-Phone = input("Enter the last 4 digits of  your phone number: ")
-print("Your current password is:", name + Id + Phone)
-old_password = name + Id + Phone
+
+def generate_username(birthday, phone_number, last_name):
+    # Extract day, month, and year from birthday
+    day, month = birthday.split("/") #https://stackoverflow.com/questions/55879461/enter-date-of-birth
+
+    # Extract last 2 digits of phone number
+    last_digits = phone_number[-2:]
+
+    # Generate username in format: username-day month year of birthday-last digits phone number
+    username = f"{last_name.lower()}{day}{month}{last_digits}@eagle.fgcu.edu"
+
+    return username
+
+
+# Get user information
+birthday = input("Enter your birthday (DD/MM): ")
+phone_number = input("Enter the last 2 digits of your phone number: ")
+last_name = input("Enter your last name: ")
+
+# Generate username
+username = generate_username(birthday, phone_number, last_name)
+
+print(f"Your username is: {username}")
+
+
+print("Your current password is:", name + birthday + phone_number )
+old_password = name + username
 password = (input("Introduce a new Password: "))
 if old_password != password:
     print("We have updated your password")
 elif old_password == password:
     print("Your password didn't change")
 
+security_questions = [
+    "What is your mother's maiden name?",
+    "What is the name of your first pet?",
+    "What is your favorite book?",
+]
+#https://www.youtube.com/watch?v=6SifUNXKWNA
+question_indices = {str(i + 1): question for i, question in enumerate(security_questions)}
+
+#  Security Question Factor Authentication
+print("Please choose a security question:")
+for index, question in question_indices.items():
+    print(f"{index}. {question}")
+
+chosen_question_index = input()
+
+# Get the user's response to the chosen security question
+chosen_question = question_indices.get(chosen_question_index)
+
+if chosen_question:
+    response = input(f"Your security question is: {chosen_question}\nPlease provide the answer to this security question:")
+    print(f"Your response to {chosen_question} has been saved as {response}.")
+else:
+    print("Invalid selection. Please choose a valid security question index.")
+
+
+#Protect the password
+
+
+import keyring
+
+NAMESPACE = "my-app"
+ENTRY = username
+
+keyring.set_password(NAMESPACE, ENTRY, password)
+cred = keyring.get_credential(NAMESPACE, ENTRY)
+
+
+# This part of the program gives major and graduation information
+#-------------------------------------------------------------
 print("Now, please login with the information provided above: ")
 
 Username = True
 while Username:
-    username = (input("Enter your username: "))
-    if username == UserName:
+    userName = (input("Enter your username: "))
+    if userName == username:
         print("Now, enter your password")
         Username = False
 
@@ -58,9 +109,21 @@ while passWord:
         print("Welcome", name)
         passWord = False
 
+
+
+# Two-Factor authentication
+
+while True:
+    user_response = input(f"Please provide the answer to the security question: {chosen_question}\n")
+    if user_response == response:
+        print("You have been authenticated.")
+        break
+    else:
+        print("Incorrect response. Please try again.")
+
 print("You have successfully logged to your student account.  ")
 
-# This part of the program gives major and graduation information
+
 print("Now, you will receive information about your graduation")
 Major = input("Please enter your major: ")
 while True:
